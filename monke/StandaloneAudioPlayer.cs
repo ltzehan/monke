@@ -1,8 +1,10 @@
 ﻿using NAudio.Wave;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace monke
@@ -11,19 +13,26 @@ namespace monke
     {
         public static StandaloneAudioPlayer Instance { get; private set; } = new StandaloneAudioPlayer();
 
-        public void PlaySound(string resource)
+        public void PlaySound(Stream stream)
         {
             var speakers = Enumerable.Range(0, WaveOut.DeviceCount)
                 .Where(x => WaveOut.GetCapabilities(x).ProductName.Contains("Speaker"))
                 .ToArray();
             var waveOut = speakers[0];
-            using var mp3 = new Mp3FileReader(resource);
+
+            using var mp3 = new Mp3FileReader(stream);
             var player = new WaveOutEvent
             {
-                DeviceNumber = waveOut
+                DeviceNumber = waveOut,
+                Volume = 1.0F
             };
+
+            ManualResetEvent ev = new ManualResetEvent(false);
+            player.PlaybackStopped += (s, e) => ev.Set();
             player.Init(mp3);
             player.Play();
+            ev.WaitOne();
+            // Console.WriteLine("played!");
         }
 
         public void CancelCurrentSound()

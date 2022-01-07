@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,6 +74,18 @@ namespace monke
             keyboardComboBox.ValueMember = "Path";
             keyboardComboBox.DataSource = KeyboardModel.models;
             keyboardComboBox.SelectedIndex = 0;
+
+            GlobalKeyboardEvents.Instance.KeyClickedEvents += OnKeyPress;
+        }
+
+        private void OnKeyPress(object? sender, KeypressEventArgs e)
+        {
+            Debug.WriteLine("on key press");
+            var press = AssetSelector.Instance.PressSoundPath.Generic;
+            var mem = new MemoryStream();
+            press.CopyTo(mem);
+            mem.Seek(0, SeekOrigin.Begin);
+            StandaloneAudioPlayer.Instance.PlaySound(mem);
         }
 
         private void onFormClosing(object sender, FormClosingEventArgs e)
@@ -90,7 +103,7 @@ namespace monke
 
         private void submitKeyboard(object sender, EventArgs e)
         {
-            AssetSelector.Instance.Keyboard = KeyboardModel.models[keyboardComboBox.SelectedIndex];
+            AssetSelector.Keyboard = KeyboardModel.models[keyboardComboBox.SelectedIndex];
             Debug.WriteLine($"Updated keyboard: {keyboardComboBox.SelectedIndex}");
         }
     }
