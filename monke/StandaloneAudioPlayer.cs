@@ -1,11 +1,10 @@
-﻿using NAudio.Wave;
+﻿using NAudio.CoreAudioApi;
+using NAudio.Wave;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Management;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace monke
 {
@@ -15,12 +14,30 @@ namespace monke
 
         public void PlaySound(Stream stream)
         {
-            var speakers = Enumerable.Range(0, WaveOut.DeviceCount)
-                .Where(x => WaveOut.GetCapabilities(x).ProductName.Contains("Speaker"))
-                .ToArray();
-            var waveOut = speakers[0];
-
+            stream.Seek(0, SeekOrigin.Begin);
             using var mp3 = new Mp3FileReader(stream);
+            var enumerator = new MMDeviceEnumerator();
+
+            var dev = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
+            var speakers = dev.Where(x => x.FriendlyName.Contains("Speaker")).ToArray();
+            var outSpeaker = speakers[0];
+
+            foreach (var o in dev)
+            {
+
+            // outSpeaker.AudioSessionManager.AudioSessionControl.
+            var outSpeakerInit = new WasapiOut(o, AudioClientShareMode.Exclusive, true, 100);
+            var ev = new ManualResetEvent(false);
+            outSpeakerInit.PlaybackStopped += (s, e) => ev.Set();
+            outSpeakerInit.Init(mp3);
+            outSpeakerInit.Play();
+            ev.WaitOne();
+            }
+           
+
+/*
+            var k = WaveOut.GetCapabilities(waveOut);
+
             var player = new WaveOutEvent
             {
                 DeviceNumber = waveOut,
@@ -31,7 +48,7 @@ namespace monke
             player.PlaybackStopped += (s, e) => ev.Set();
             player.Init(mp3);
             player.Play();
-            ev.WaitOne();
+            ev.WaitOne();*/
             // Console.WriteLine("played!");
         }
 
