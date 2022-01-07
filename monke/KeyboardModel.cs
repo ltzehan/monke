@@ -16,7 +16,8 @@
             new KeyboardModel("MX Brown", "mxbrown"),
             new KeyboardModel("Red Ink", "redink"),
             new KeyboardModel("Topre", "topre"),
-            new KeyboardModel("Turquoise", "turquoise")
+            new KeyboardModel("Turquoise", "turquoise"),
+            new KeyboardModel("quack", "duck")
         };
     }
 }
