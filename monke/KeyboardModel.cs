@@ -1,25 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace monke
+﻿namespace monke
 {
     // Basically enums
-    class KeyboardModel
+    public record KeyboardModel(string DisplayName, string Path)
     {
-        private string displayName;
-        private string path;
-        public string DisplayName => displayName;
-        public string Path => path;
-
-        public KeyboardModel(string displayName, string path)
-        {
-            this.displayName = displayName;
-            this.path = path;
-        }
-
         public static readonly KeyboardModel[] models = {
             new KeyboardModel("Alpaca", "alpaca"),
             new KeyboardModel("Black Ink", "blackink"),
@@ -35,6 +18,5 @@ namespace monke
             new KeyboardModel("Topre", "topre"),
             new KeyboardModel("Turqoise", "turqoise")
         };
-
     }
 }

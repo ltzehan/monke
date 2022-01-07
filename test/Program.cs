@@ -8,7 +8,8 @@ namespace test
         public static void Main()
         {
             Console.WriteLine("Hello, World!");
-            StandaloneAudioPlayer.Instance.PlaySound("");
+            // StandaloneAudioPlayer.Instance.PlaySound("");
+            var inst = GlobalKeyboardEvents.Instance;
             Console.ReadKey();
         }
     }
