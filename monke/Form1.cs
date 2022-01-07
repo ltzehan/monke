@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,23 @@ namespace monke
             form2.Show();
         }
 
-        void comboBox1_SelectedIndexChanged()
+        private void FormLoad(object sender, EventArgs e)
+        {   
+            keyboardComboBox.DisplayMember = "DisplayName";
+            keyboardComboBox.ValueMember = "Path";
+            keyboardComboBox.DataSource = KeyboardModel.models;
+            keyboardComboBox.SelectedIndex = 0;
+        }
+
+        private void keyboardChange(object sender, EventArgs e)
         {
-            
+            Debug.WriteLine($"Keyboard selected: {keyboardComboBox.SelectedIndex}");
+        }
+
+        private void submitKeyboard(object sender, EventArgs e)
+        {
+            AssetSelector.Instance.Keyboard = KeyboardModel.models[keyboardComboBox.SelectedIndex];
+            Debug.WriteLine($"Updated keyboard: {keyboardComboBox.SelectedIndex}");
         }
     }
 }
