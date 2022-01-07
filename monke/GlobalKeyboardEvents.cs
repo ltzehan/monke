@@ -29,11 +29,13 @@ namespace monke
             _hookProc = KeyClicked;
             _gcHandle = GCHandle.Alloc(_hookProc);
             _hookId = SetWindowsHookEx(HookType.WH_KEYBOARD_LL, _hookProc, IntPtr.Zero, 0);
-            Events = new ConcurrentQueue<KeypressEventArgs>();
-            _gcHandle2 = GCHandle.Alloc(Events);
+            _events = new ConcurrentQueue<KeypressEventArgs>();
+            _gcHandle2 = GCHandle.Alloc(_events);
         }
 
-        public ConcurrentQueue<KeypressEventArgs> Events { get; }
+        private ConcurrentQueue<KeypressEventArgs> _events;
+
+        public ConcurrentQueue<KeypressEventArgs> Events => _events;
 
         // TODO accept Alt key
         private IntPtr KeyClicked(int code, IntPtr wParam, IntPtr lParam)
@@ -43,7 +45,7 @@ namespace monke
                 if (lParam != IntPtr.Zero)
                 {
                     var lp = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
-                    Events.Enqueue(new KeypressEventArgs(wParam == (IntPtr)WM_KEYDOWN, lp));
+                    _events.Enqueue(new KeypressEventArgs(wParam == (IntPtr)WM_KEYDOWN, lp));
                 }
             }
             return CallNextHookEx(_hookId.ToInt32(), code, wParam, lParam);

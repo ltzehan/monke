@@ -80,13 +80,13 @@ namespace monke
             keyboardComboBox.DataSource = KeyboardModel.models;
             keyboardComboBox.SelectedIndex = 0;
 
-            var coll = GlobalKeyboardEvents.Instance.Events;
+            var instance = GlobalKeyboardEvents.Instance;
 
             var t = new Thread(() =>
             {
                 while (true)
                 {
-                    if (coll.TryDequeue(out var ev))
+                    if (instance.Events.TryDequeue(out var ev))
                     {
                         OnKeyPress(ev);
                     }
