@@ -14,8 +14,8 @@ namespace monke
 
         private static KeyboardModel keyboard = KeyboardModel.models[0];
         // TODO: Map diff keys to diff sounds
-        private static string pressSoundPath;
-        private static string releaseSoundPath;
+        private static string pressSoundPath = "";
+        private static string releaseSoundPath = "";
 
         public string PressSoundPath => pressSoundPath;
         public string ReleaseSoundPath => releaseSoundPath;

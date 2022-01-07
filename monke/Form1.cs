@@ -20,5 +20,9 @@ namespace monke
             form2.Show();
         }
 
+        void comboBox1_SelectedIndexChanged()
+        {
+            
+        }
     }
 }
