@@ -40,29 +40,31 @@ namespace monke
         private void InitializeToolbarIcon()
         {
             contextMenu = new ContextMenuStrip();
-            menuItem = new ToolStripMenuItem();
-
+            menuItem = new ToolStripMenuItem
+            {
+                Text = "no more monke"
+            };
+            menuItem.Click += new EventHandler(ToolbarClickHandler);
             contextMenu.Items.Add(menuItem);
 
-            menuItem.Text = "no more monke";
-            menuItem.Click += new EventHandler(toolbarClickHandler);
-
-            notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = Properties.Resources.Icon;
-            notifyIcon.Text = "monke time";
-            notifyIcon.ContextMenuStrip = contextMenu;
-            notifyIcon.Visible = false;
-            notifyIcon.Click += new EventHandler(notifyIconClickHandler);
+            notifyIcon = new NotifyIcon
+            {
+                Icon = Properties.Resources.Icon,
+                Text = "monke time",
+                ContextMenuStrip = contextMenu,
+                Visible = false
+            };
+            notifyIcon.Click += new EventHandler(NotifyIconClickHandler);
         }
 
-        private void toolbarClickHandler(object sender, EventArgs e)
+        private void ToolbarClickHandler(object? sender, EventArgs e)
         {
             form2.Dispose();
             notifyIcon.Dispose();
             Environment.Exit(0);
         }
 
-        private void notifyIconClickHandler(object sender, EventArgs e)
+        private void NotifyIconClickHandler(object? sender, EventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;
             if (me.Button == MouseButtons.Left && WindowState == FormWindowState.Minimized)
@@ -76,7 +78,7 @@ namespace monke
             }
         }
 
-        private void OnFormLoad(object sender, EventArgs e)
+        private void OnFormLoad(object? sender, EventArgs e)
         {   
             keyboardComboBox.DisplayMember = "DisplayName";
             keyboardComboBox.ValueMember = "Path";
@@ -103,7 +105,7 @@ namespace monke
             StandaloneAudioPlayer.Instance.PlaySound(streamCopy);
         }
 
-        private void OnFormClosing(object sender, FormClosingEventArgs e)
+        private void OnFormClosing(object? sender, FormClosingEventArgs e)
         {   
             notifyIcon.Visible = true;
             e.Cancel = true;
@@ -111,7 +113,7 @@ namespace monke
             Hide();
         }
 
-        private void OnKeyboardChange(object sender, EventArgs e)
+        private void OnKeyboardChange(object? sender, EventArgs e)
         {
             AssetSelector.Keyboard = KeyboardModel.models[keyboardComboBox.SelectedIndex];
             Debug.WriteLine($"Keyboard selected: {keyboardComboBox.SelectedIndex}");
