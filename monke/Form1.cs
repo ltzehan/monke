@@ -20,6 +20,10 @@ namespace monke
         private ContextMenuStrip contextMenu;
         private ToolStripMenuItem menuItem;
 
+        const uint VK_CODE_BACKSPACE = 8;
+        const uint VK_CODE_ENTER = 13;
+        const uint VK_CODE_SPACE = 32;
+
         public Form1()
         {
             InitializeComponent();
@@ -27,12 +31,13 @@ namespace monke
             Text = "monke";
             FormBorderStyle = FormBorderStyle.FixedDialog;
 
-            setupToolbarIcon();
+            InitializeToolbarIcon();
 
             form2 = new();
             form2.Show();
         }
-        private void setupToolbarIcon()
+
+        private void InitializeToolbarIcon()
         {
             contextMenu = new ContextMenuStrip();
             menuItem = new ToolStripMenuItem();
@@ -71,7 +76,7 @@ namespace monke
             }
         }
 
-        private void onFormLoad(object sender, EventArgs e)
+        private void OnFormLoad(object sender, EventArgs e)
         {   
             keyboardComboBox.DisplayMember = "DisplayName";
             keyboardComboBox.ValueMember = "Path";
@@ -83,16 +88,22 @@ namespace monke
 
         private void OnKeyPress(object? sender, KeypressEventArgs e)
         {
-            var press = e.KeyDown ? AssetSelector.Instance.PressSoundPath.Generic : AssetSelector.Instance.ReleaseSoundPath.Generic;
-            var mem = new MemoryStream();
-            press.Seek(0, SeekOrigin.Begin);
-            press.CopyTo(mem);
-            mem.Seek(0, SeekOrigin.Begin);
-
-            StandaloneAudioPlayer.Instance.PlaySound(mem);
+            KeySoundPath soundPath = e.KeyDown ? AssetSelector.Instance.PressSoundPath : AssetSelector.Instance.ReleaseSoundPath;
+            Stream soundStream = e.Info.vkCode switch
+            {
+                VK_CODE_BACKSPACE => soundPath.Backspace,
+                VK_CODE_ENTER => soundPath.Enter,
+                VK_CODE_SPACE => soundPath.Space,
+                _ => soundPath.Generic,
+            };
+            Stream streamCopy = new MemoryStream();
+            soundStream.Seek(0, SeekOrigin.Begin);
+            soundStream.CopyTo(streamCopy);
+            streamCopy.Seek(0, SeekOrigin.Begin);
+            StandaloneAudioPlayer.Instance.PlaySound(streamCopy);
         }
 
-        private void onFormClosing(object sender, FormClosingEventArgs e)
+        private void OnFormClosing(object sender, FormClosingEventArgs e)
         {   
             notifyIcon.Visible = true;
             e.Cancel = true;
@@ -100,15 +111,10 @@ namespace monke
             Hide();
         }
 
-        private void keyboardChange(object sender, EventArgs e)
-        {
-            Debug.WriteLine($"Keyboard selected: {keyboardComboBox.SelectedIndex}");
-        }
-
-        private void submitKeyboard(object sender, EventArgs e)
+        private void OnKeyboardChange(object sender, EventArgs e)
         {
             AssetSelector.Keyboard = KeyboardModel.models[keyboardComboBox.SelectedIndex];
-            Debug.WriteLine($"Updated keyboard: {keyboardComboBox.SelectedIndex}");
+            Debug.WriteLine($"Keyboard selected: {keyboardComboBox.SelectedIndex}");
         }
     }
 }
