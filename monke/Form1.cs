@@ -22,6 +22,9 @@ namespace monke
         public Form1()
         {
             InitializeComponent();
+            
+            Text = "monke";
+            FormBorderStyle = FormBorderStyle.FixedDialog;
 
             setupToolbarIcon();
 
@@ -55,13 +58,13 @@ namespace monke
 
         private void notifyIconClickHandler(object sender, EventArgs e)
         {
-            Debug.WriteLine("Restore");
             if (WindowState == FormWindowState.Minimized)
             {
+                Show();
                 WindowState = FormWindowState.Normal;
+                notifyIcon.Visible = false;
+                Focus();
             }
-
-            Activate();
         }
 
         private void onFormLoad(object sender, EventArgs e)
@@ -71,10 +74,12 @@ namespace monke
             keyboardComboBox.DataSource = KeyboardModel.models;
             keyboardComboBox.SelectedIndex = 0;
         }
+
         private void onFormClosing(object sender, FormClosingEventArgs e)
         {   
             notifyIcon.Visible = true;
             e.Cancel = true;
+            WindowState = FormWindowState.Minimized;
             Hide();
         }
 
