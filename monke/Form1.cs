@@ -35,8 +35,9 @@ namespace monke
         private void OnKeyPress(object? sender, KeypressEventArgs e)
         {
             Debug.WriteLine("on key press");
-            var press = AssetSelector.Instance.PressSoundPath.Generic;
+            var press = e.KeyDown ? AssetSelector.Instance.PressSoundPath.Generic : AssetSelector.Instance.ReleaseSoundPath.Generic;
             var mem = new MemoryStream();
+            press.Seek(0, SeekOrigin.Begin);
             press.CopyTo(mem);
             mem.Seek(0, SeekOrigin.Begin);
             StandaloneAudioPlayer.Instance.PlaySound(mem);

@@ -18,6 +18,13 @@ namespace monke
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+
+            /*GlobalKeyboardEvents.Instance.KeyClickedEvents += (s, e) =>
+            {
+                StandaloneAudioPlayer.Instance.PlaySound(AssetSelector.Instance.PressSoundPath);
+            };*/
+
             Application.Run(new Form1());
         }
     }
