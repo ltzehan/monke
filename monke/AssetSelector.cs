@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace monke
 {
     // Service to load assets based on keyboard selected
-    sealed internal class AssetSelector
+    sealed public class AssetSelector
     {
         const string PRESS_PATH = "press";
         const string RELEASE_PATH = "released";
