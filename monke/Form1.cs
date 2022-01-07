@@ -15,6 +15,9 @@ namespace monke
         public Form1()
         {
             InitializeComponent();
+
+            Form2 form2 = new();
+            form2.Show();
         }
 
     }
