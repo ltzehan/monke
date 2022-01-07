@@ -42,7 +42,7 @@ namespace monke
             // mixer.AddMixerInput(keySound);
             keySound.Seek(0, SeekOrigin.Begin);
 
-            var waveOut = new WaveOut();
+            var waveOut = new WaveOutEvent();
             waveOut.DeviceNumber = deviceId;
             waveOut.Init(keySound);
             waveOut.Play();
