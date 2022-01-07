@@ -31,7 +31,7 @@ namespace monke
         {
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.label1 = new System.Windows.Forms.Label();
+            this.outlinedLabel1 = new monke.OutlinedLabel();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -39,30 +39,30 @@ namespace monke
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
-            // label1
+            // outlinedLabel1
             // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Font = new System.Drawing.Font("Arial", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label1.Location = new System.Drawing.Point(278, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(275, 36);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "<keyboard sound>";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.outlinedLabel1.AutoSize = true;
+            this.outlinedLabel1.Font = new System.Drawing.Font("Arial", 72F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.outlinedLabel1.Location = new System.Drawing.Point(61, 9);
+            this.outlinedLabel1.Name = "outlinedLabel1";
+            this.outlinedLabel1.OutlineForeColor = System.Drawing.Color.Black;
+            this.outlinedLabel1.OutlineWidth = 8F;
+            this.outlinedLabel1.Size = new System.Drawing.Size(861, 111);
+            this.outlinedLabel1.TabIndex = 2;
+            this.outlinedLabel1.Text = "*keyboard sound*";
             // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(800, 50);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(800, 100);
+            this.Controls.Add(this.outlinedLabel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Form2";
             this.Text = "Form2";
+            this.TopMost = true;
+            this.TransparencyKey = System.Drawing.Color.White;
             this.Load += new System.EventHandler(this.Form2_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -72,6 +72,6 @@ namespace monke
         #endregion
 
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.Label label1;
+        private OutlinedLabel outlinedLabel1;
     }
 }

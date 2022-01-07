@@ -22,44 +22,54 @@ namespace monke
         private ContextMenuStrip contextMenu;
         private ToolStripMenuItem menuItem;
 
+        const uint VK_CODE_BACKSPACE = 8;
+        const uint VK_CODE_ENTER = 13;
+        const uint VK_CODE_SPACE = 32;
+
         public Form1()
         {
             InitializeComponent();
             
             Text = "monke";
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Icon = Properties.Resources.Icon;
+            MaximizeBox = false;
 
-            setupToolbarIcon();
+            InitializeToolbarIcon();
 
             form2 = new();
             form2.Show();
+            form2.Opacity = 0;
         }
-        private void setupToolbarIcon()
+
+        private void InitializeToolbarIcon()
         {
             contextMenu = new ContextMenuStrip();
-            menuItem = new ToolStripMenuItem();
-
+            menuItem = new ToolStripMenuItem
+            {
+                Text = "no more monke"
+            };
+            menuItem.Click += new EventHandler(ToolbarClickHandler);
             contextMenu.Items.Add(menuItem);
 
-            menuItem.Text = "no more monke";
-            menuItem.Click += new EventHandler(toolbarClickHandler);
-
-            notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = Properties.Resources.Icon;
-            notifyIcon.Text = "monke time";
-            notifyIcon.ContextMenuStrip = contextMenu;
-            notifyIcon.Visible = false;
-            notifyIcon.Click += new EventHandler(notifyIconClickHandler);
+            notifyIcon = new NotifyIcon
+            {
+                Icon = Properties.Resources.Icon,
+                Text = "monke time",
+                ContextMenuStrip = contextMenu,
+                Visible = false
+            };
+            notifyIcon.Click += new EventHandler(NotifyIconClickHandler);
         }
 
-        private void toolbarClickHandler(object sender, EventArgs e)
+        private void ToolbarClickHandler(object? sender, EventArgs e)
         {
             form2.Dispose();
             notifyIcon.Dispose();
             Environment.Exit(0);
         }
 
-        private void notifyIconClickHandler(object sender, EventArgs e)
+        private void NotifyIconClickHandler(object? sender, EventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;
             if (me.Button == MouseButtons.Left && WindowState == FormWindowState.Minimized)
@@ -73,7 +83,7 @@ namespace monke
             }
         }
 
-        private void onFormLoad(object sender, EventArgs e)
+        private void OnFormLoad(object? sender, EventArgs e)
         {   
             keyboardComboBox.DisplayMember = "DisplayName";
             keyboardComboBox.ValueMember = "Path";
@@ -97,16 +107,23 @@ namespace monke
 
         private void OnKeyPress(KeypressEventArgs e)
         {
-            var press = e.KeyDown ? AssetSelector.Instance.PressSoundPath.Generic : AssetSelector.Instance.ReleaseSoundPath.Generic;
-            var mem = new MemoryStream();
-            press.Seek(0, SeekOrigin.Begin);
-            press.CopyTo(mem);
-            mem.Seek(0, SeekOrigin.Begin);
-
-            StandaloneAudioPlayer.Instance.PlaySound(mem);
+            KeySoundPath soundPath = e.KeyDown ? AssetSelector.Instance.PressSoundPath : AssetSelector.Instance.ReleaseSoundPath;
+            Stream soundStream = e.Info.vkCode switch
+            {
+                VK_CODE_BACKSPACE => soundPath.Backspace,
+                VK_CODE_ENTER => soundPath.Enter,
+                VK_CODE_SPACE => soundPath.Space,
+                _ => soundPath.Generic,
+            };
+            Stream streamCopy = new MemoryStream();
+            soundStream.Seek(0, SeekOrigin.Begin);
+            soundStream.CopyTo(streamCopy);
+            streamCopy.Seek(0, SeekOrigin.Begin);
+            StandaloneAudioPlayer.Instance.PlaySound(streamCopy);
+            form2.TriggerShow();
         }
 
-        private void onFormClosing(object sender, FormClosingEventArgs e)
+        private void OnFormClosing(object? sender, FormClosingEventArgs e)
         {   
             notifyIcon.Visible = true;
             e.Cancel = true;
@@ -114,15 +131,10 @@ namespace monke
             Hide();
         }
 
-        private void keyboardChange(object sender, EventArgs e)
-        {
-            Debug.WriteLine($"Keyboard selected: {keyboardComboBox.SelectedIndex}");
-        }
-
-        private void submitKeyboard(object sender, EventArgs e)
+        private void OnKeyboardChange(object? sender, EventArgs e)
         {
             AssetSelector.Keyboard = KeyboardModel.models[keyboardComboBox.SelectedIndex];
-            Debug.WriteLine($"Updated keyboard: {keyboardComboBox.SelectedIndex}");
+            Debug.WriteLine($"Keyboard selected: {keyboardComboBox.SelectedIndex}");
         }
     }
 }

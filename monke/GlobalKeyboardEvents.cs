@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace monke
 {
@@ -24,6 +25,8 @@ namespace monke
         public static GlobalKeyboardEvents Instance = new GlobalKeyboardEvents();
         private readonly IntPtr _hookId;
 
+        private Dictionary<uint, IntPtr> _prevKeyState = new Dictionary<uint, IntPtr>();
+
         private GlobalKeyboardEvents()
         {
             _hookProc = KeyClicked;
@@ -37,7 +40,7 @@ namespace monke
 
         public ConcurrentQueue<KeypressEventArgs> Events => _events;
 
-        // TODO accept Alt key
+        // TODO accept Fn key
         private IntPtr KeyClicked(int code, IntPtr wParam, IntPtr lParam)
         {
             if (code == 0 && (wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_KEYUP))
@@ -45,7 +48,21 @@ namespace monke
                 if (lParam != IntPtr.Zero)
                 {
                     var lp = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
-                    _events.Enqueue(new KeypressEventArgs(wParam == (IntPtr)WM_KEYDOWN, lp));
+
+                    var keyCode = lp!.vkCode;
+
+                    // Check if a WM_KEYUP preceeds WM_KEYDOWN, otherwise event is from a key being held down and should not invoke callback
+                    bool trigger = false;
+                    if (!_prevKeyState.ContainsKey(keyCode) || _prevKeyState[keyCode] != wParam)
+                    {
+                        _prevKeyState[keyCode] = wParam;
+                        trigger = true;
+                    }
+
+                    if (trigger && !lp.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED)) // checks synthetic keycode
+                    {
+                        _events.Enqueue(new KeypressEventArgs(wParam == (IntPtr)WM_KEYDOWN, lp));
+                    }
                 }
             }
             return CallNextHookEx(_hookId.ToInt32(), code, wParam, lParam);
