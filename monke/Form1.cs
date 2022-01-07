@@ -35,6 +35,7 @@ namespace monke
 
             form2 = new();
             form2.Show();
+            form2.Opacity = 0;
         }
 
         private void InitializeToolbarIcon()
@@ -103,6 +104,7 @@ namespace monke
             soundStream.CopyTo(streamCopy);
             streamCopy.Seek(0, SeekOrigin.Begin);
             StandaloneAudioPlayer.Instance.PlaySound(streamCopy);
+            form2.TriggerShow();
         }
 
         private void OnFormClosing(object? sender, FormClosingEventArgs e)
