@@ -3,7 +3,6 @@ using NAudio.Wave;
 using System;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Threading;
 
 namespace monke
@@ -11,12 +10,13 @@ namespace monke
     public class StandaloneAudioPlayer
     {
         public static StandaloneAudioPlayer Instance { get; private set; } = new StandaloneAudioPlayer();
+        public object DeviceOut { get; private set; }
 
         public void PlaySound(Stream stream)
         {
             stream.Seek(0, SeekOrigin.Begin);
             using var mp3 = new Mp3FileReader(stream);
-            var enumerator = new MMDeviceEnumerator();
+            /*var enumerator = new MMDeviceEnumerator();
 
             var dev = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
             var speakers = dev.Where(x => x.FriendlyName.Contains("Speaker")).ToArray();
@@ -24,14 +24,23 @@ namespace monke
 
             foreach (var o in dev)
             {
+                // outSpeaker.AudioSessionManager.AudioSessionControl.
+                var outSpeakerInit = new WasapiOut(o, AudioClientShareMode.Shared, true, 100);
+                var ev = new ManualResetEvent(false);
+                outSpeakerInit.PlaybackStopped += (s, e) => ev.Set();
+                outSpeakerInit.Init(mp3);
+                outSpeakerInit.Play();
+                ev.WaitOne();
+            }*/
 
-            // outSpeaker.AudioSessionManager.AudioSessionControl.
-            var outSpeakerInit = new WasapiOut(o, AudioClientShareMode.Exclusive, true, 100);
-            var ev = new ManualResetEvent(false);
-            outSpeakerInit.PlaybackStopped += (s, e) => ev.Set();
-            outSpeakerInit.Init(mp3);
-            outSpeakerInit.Play();
-            ev.WaitOne();
+            foreach (var d in DirectSoundOut.Devices)
+            {
+                using var outSpeakerInit = new DirectSoundOut(d.Guid);
+                var ev = new ManualResetEvent(false);
+                outSpeakerInit.PlaybackStopped += (s, e) => ev.Set();
+                outSpeakerInit.Init(mp3);
+                outSpeakerInit.Play();
+
             }
            
 
