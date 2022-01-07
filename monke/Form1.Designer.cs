@@ -28,9 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            this.label1 = new System.Windows.Forms.Label();
             this.keyboardComboBox = new System.Windows.Forms.ComboBox();
             this.updateKeyboard = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // keyboardComboBox
@@ -61,7 +62,7 @@
             this.label1.Size = new System.Drawing.Size(73, 20);
             this.label1.TabIndex = 3;
             this.label1.Text = "Keyboard";
-            // 
+            //
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -72,7 +73,8 @@
             this.Controls.Add(this.keyboardComboBox);
             this.Name = "Form1";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.FormLoad);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onFormClosing);
+            this.Load += new System.EventHandler(this.onFormLoad);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -80,8 +82,9 @@
 
         #endregion
 
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox keyboardComboBox;
         private System.Windows.Forms.Button updateKeyboard;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     }
 }
