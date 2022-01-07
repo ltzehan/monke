@@ -13,9 +13,9 @@ using System.Windows.Forms;
 
 namespace monke
 {
-    public partial class Form1 : Form
+    public partial class SettingsForm : Form
     {
-        private Form2 form2;
+        private SubtitleForm subtitleForm;
 
         private NotifyIcon notifyIcon;
         private ContextMenuStrip contextMenu;
@@ -25,7 +25,7 @@ namespace monke
         const uint VK_CODE_ENTER = 13;
         const uint VK_CODE_SPACE = 32;
 
-        public Form1()
+        public SettingsForm()
         {
             InitializeComponent();
             
@@ -36,9 +36,9 @@ namespace monke
 
             InitializeToolbarIcon();
 
-            form2 = new();
-            form2.Show();
-            form2.Opacity = 0;
+            subtitleForm = new();
+            subtitleForm.Show();
+            subtitleForm.Opacity = 0;
         }
 
         private void InitializeToolbarIcon()
@@ -63,7 +63,7 @@ namespace monke
 
         private void ToolbarClickHandler(object? sender, EventArgs e)
         {
-            form2.Dispose();
+            subtitleForm.Dispose();
             notifyIcon.Dispose();
             Environment.Exit(0);
         }
@@ -89,6 +89,8 @@ namespace monke
             keyboardComboBox.DataSource = KeyboardModel.models;
             keyboardComboBox.SelectedIndex = 0;
 
+            subtitlesCheckbox.Checked = true;
+
             GlobalKeyboardEvents.Instance.KeyClickedEvents += OnKeyPress;
         }
 
@@ -104,7 +106,8 @@ namespace monke
             };
             
             StandaloneAudioPlayer.Instance.PlaySound(keySound);
-            form2.TriggerShow();
+
+            if (subtitlesCheckbox.Checked) subtitleForm.TriggerShow();
         }
 
         private void OnFormClosing(object? sender, FormClosingEventArgs e)
@@ -118,7 +121,7 @@ namespace monke
         private void OnKeyboardChange(object? sender, EventArgs e)
         {
             AssetSelector.Keyboard = KeyboardModel.models[keyboardComboBox.SelectedIndex];
-            Debug.WriteLine($"Keyboard selected: {keyboardComboBox.SelectedIndex}");
         }
+
     }
 }
