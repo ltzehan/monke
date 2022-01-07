@@ -12,29 +12,27 @@ namespace monke
     {
         public static StandaloneAudioPlayer Instance { get; private set; } = new StandaloneAudioPlayer();
 
-        private readonly int deviceId;
+        private int deviceId;
         private readonly IWavePlayer player;
-        private readonly MixingSampleProvider mixer;
 
         public StandaloneAudioPlayer()
         {
-            deviceId = Enumerable.Range(0, WaveOut.DeviceCount)
+            RecalcSpeakerId();
+
+            var client = new CustomMMNotificationClient(this);
+            var enumerator = new MMDeviceEnumerator();
+            enumerator.RegisterEndpointNotificationCallback(client);
+        }
+
+        private int GetSpeakerId()
+        {
+            return Enumerable.Range(0, WaveOut.DeviceCount)
                 .First(idx => WaveOut.GetCapabilities(idx).ProductName.Contains("Speaker"));
-            
-            player = new WaveOutEvent
-            {
-                DeviceNumber = deviceId,
-                Volume = 1.0F
-            };
+        }
 
-            int sampleRate = 44100;
-            int channelCount = 1;
-
-            mixer = new(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount));
-            mixer.ReadFully = true;
-
-            player.Init(mixer);
-            player.Play();
+        public void RecalcSpeakerId()
+        {
+            this.deviceId = GetSpeakerId();
         }
 
         public void PlaySound(WaveStream keySound)
