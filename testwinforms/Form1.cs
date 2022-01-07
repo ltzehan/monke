@@ -23,7 +23,7 @@ namespace testwinforms
             int i = 0;
             GlobalKeyboardEvents.Instance.KeyClickedEvents += (s, e) =>
             {
-                this.textBox1.Text = i++ + " : " + e.vkCode.ToString();
+                this.textBox1.Text = i++ + " : " + e.Info.vkCode.ToString();
             };
         }
     }

@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace monke
 {
-    record KeySoundPath(string Generic, string Backspace, string Enter, string Space)
+    public record KeySoundPath(Stream Generic, Stream Backspace, Stream Enter, Stream Space)
     {
 
     }
 
     // Service to load assets based on keyboard selected
-    sealed internal class AssetSelector
+    sealed public class AssetSelector
     {
         const string PRESS_FOLDER_NAME = "press";
         const string RELEASE_FOLDER_NAME = "released";
@@ -22,6 +23,12 @@ namespace monke
         public KeySoundPath ReleaseSoundPath { get; private set; }
 
         private static KeyboardModel keyboard = KeyboardModel.models[0];
+
+        private static Stream _soundStream(string path)
+        {
+            return typeof(AssetSelector).Assembly.GetManifestResourceStream(path);
+        }
+        
 
         public static KeyboardModel Keyboard
         {
@@ -59,10 +66,10 @@ namespace monke
             string spacePressSound = pressResourceNames.FirstOrDefault(x => x.Contains("BACKSPACE")) ?? genericPressSound;
 
             KeySoundPath pressSoundPath = new(
-                Generic: genericPressSound,
-                Backspace: backspacePressSound,
-                Enter: enterPressSound,
-                Space: spacePressSound
+                Generic: _soundStream(genericPressSound),
+                Backspace: _soundStream(backspacePressSound),
+                Enter: _soundStream(enterPressSound),
+                Space: _soundStream(spacePressSound)
             );
 
             IEnumerable<string> releaseResourceNames = resourceNames.Where(x => x.Contains(RELEASE_FOLDER_NAME));
@@ -72,10 +79,10 @@ namespace monke
             string spaceReleaseSound = releaseResourceNames.FirstOrDefault(x => x.Contains("BACKSPACE")) ?? genericReleaseSound;
 
             KeySoundPath releaseSoundPath = new(
-                Generic: genericReleaseSound,
-                Backspace: backspaceReleaseSound,
-                Enter: enterReleaseSound,
-                Space: spaceReleaseSound
+                Generic: _soundStream(genericReleaseSound),
+                Backspace: _soundStream(backspaceReleaseSound),
+                Enter: _soundStream(enterReleaseSound),
+                Space: _soundStream(spaceReleaseSound)
             );
 
             return new(
