@@ -27,7 +27,7 @@ namespace monke
         public void PlaySound(WaveStream keySound)
         {
             keySound.Seek(0, SeekOrigin.Begin);
-             
+
             var waveOut = new DirectSoundOut(speakerDevice.Guid, 50);
             waveOut.Init(keySound);
             waveOut.Play();
