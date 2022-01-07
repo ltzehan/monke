@@ -17,12 +17,14 @@ namespace monke
 
     public class GlobalKeyboardEvents
     {
+        public static HookProc _hookProc;
         public static GlobalKeyboardEvents Instance = new GlobalKeyboardEvents();
         private readonly IntPtr _hookId;
 
-        public GlobalKeyboardEvents()
+        private GlobalKeyboardEvents()
         {
-            _hookId = SetWindowsHookEx(HookType.WH_KEYBOARD_LL, KeyClicked, IntPtr.Zero, 0);
+            _hookProc = KeyClicked;
+            _hookId = SetWindowsHookEx(HookType.WH_KEYBOARD_LL, _hookProc, IntPtr.Zero, 0);
         }
 
         public event EventHandler<KeypressEventArgs> KeyClickedEvents;
@@ -32,10 +34,13 @@ namespace monke
         {
             if (code == 0 && (wParam == (IntPtr)WM_KEYDOWN || wParam == (IntPtr)WM_KEYUP))
             {
-                var lp = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
-                if (lp != null && !lp.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED)) // checks synethetic keycode
+                if (lParam != IntPtr.Zero)
                 {
-                    KeyClickedEvents(this, new KeypressEventArgs(wParam == (IntPtr)WM_KEYDOWN, lp));
+                    var lp = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
+                    if (lp.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED)) // checks synthetic keycode
+                    {
+                        KeyClickedEvents(this, new KeypressEventArgs(wParam == (IntPtr)WM_KEYDOWN, lp));
+                    }
                 }
             }
             return CallNextHookEx(_hookId.ToInt32(), code, wParam, lParam);
