@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 
 namespace monke
@@ -18,16 +19,21 @@ namespace monke
     public class GlobalKeyboardEvents
     {
         public static HookProc _hookProc;
+        private static GCHandle _gcHandle;
+        private static GCHandle _gcHandle2;
         public static GlobalKeyboardEvents Instance = new GlobalKeyboardEvents();
         private readonly IntPtr _hookId;
 
         private GlobalKeyboardEvents()
         {
             _hookProc = KeyClicked;
+            _gcHandle = GCHandle.Alloc(_hookProc);
             _hookId = SetWindowsHookEx(HookType.WH_KEYBOARD_LL, _hookProc, IntPtr.Zero, 0);
+            Events = new ConcurrentQueue<KeypressEventArgs>();
+            _gcHandle2 = GCHandle.Alloc(Events);
         }
 
-        public event EventHandler<KeypressEventArgs> KeyClickedEvents;
+        public ConcurrentQueue<KeypressEventArgs> Events { get; }
 
         // TODO accept Alt key
         private IntPtr KeyClicked(int code, IntPtr wParam, IntPtr lParam)
@@ -37,10 +43,7 @@ namespace monke
                 if (lParam != IntPtr.Zero)
                 {
                     var lp = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
-                    if (!lp.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED)) // checks synthetic keycode
-                    {
-                        KeyClickedEvents(this, new KeypressEventArgs(wParam == (IntPtr)WM_KEYDOWN, lp));
-                    }
+                    Events.Enqueue(new KeypressEventArgs(wParam == (IntPtr)WM_KEYDOWN, lp));
                 }
             }
             return CallNextHookEx(_hookId.ToInt32(), code, wParam, lParam);

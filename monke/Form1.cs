@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -78,10 +80,22 @@ namespace monke
             keyboardComboBox.DataSource = KeyboardModel.models;
             keyboardComboBox.SelectedIndex = 0;
 
-            GlobalKeyboardEvents.Instance.KeyClickedEvents += OnKeyPress;
+            var coll = GlobalKeyboardEvents.Instance.Events;
+
+            var t = new Thread(() =>
+            {
+                while (true)
+                {
+                    if (coll.TryDequeue(out var ev))
+                    {
+                        OnKeyPress(ev);
+                    }
+                }
+            });
+            t.Start();
         }
 
-        private void OnKeyPress(object? sender, KeypressEventArgs e)
+        private void OnKeyPress(KeypressEventArgs e)
         {
             var press = e.KeyDown ? AssetSelector.Instance.PressSoundPath.Generic : AssetSelector.Instance.ReleaseSoundPath.Generic;
             var mem = new MemoryStream();
