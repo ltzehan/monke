@@ -10,7 +10,7 @@ namespace monke
     sealed internal class AssetSelector
     {
         const string PRESS_PATH = "press";
-        const string RELEASE_PATH = "release";
+        const string RELEASE_PATH = "released";
 
         private static KeyboardModel keyboard = KeyboardModel.models[0];
         // TODO: Map diff keys to diff sounds
