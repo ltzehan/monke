@@ -83,7 +83,6 @@ namespace monke
 
         private void OnKeyPress(object? sender, KeypressEventArgs e)
         {
-            Debug.WriteLine("on key press");
             var press = e.KeyDown ? AssetSelector.Instance.PressSoundPath.Generic : AssetSelector.Instance.ReleaseSoundPath.Generic;
             var mem = new MemoryStream();
             press.CopyTo(mem);
