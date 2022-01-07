@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,8 +18,14 @@ namespace monke
         private static string pressSoundPath = "";
         private static string releaseSoundPath = "";
 
-        public string PressSoundPath => pressSoundPath;
-        public string ReleaseSoundPath => releaseSoundPath;
+        public Stream PressSoundPath => _soundStream(pressSoundPath);
+        public Stream ReleaseSoundPath => _soundStream(releaseSoundPath);
+
+        private Stream _soundStream(string path)
+        {
+            return typeof(AssetSelector).Assembly.GetManifestResourceStream(path);
+        }
+        
 
         public KeyboardModel Keyboard
         {
