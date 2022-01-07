@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -93,19 +94,16 @@ namespace monke
 
         private void OnKeyPress(object? sender, KeypressEventArgs e)
         {
-            KeySoundPath soundPath = e.KeyDown ? AssetSelector.Instance.PressSoundPath : AssetSelector.Instance.ReleaseSoundPath;
-            Stream soundStream = e.Info.vkCode switch
+            KeySoundProvider soundProvider = e.KeyDown ? AssetSelector.Instance.PressSoundProvider : AssetSelector.Instance.ReleaseSoundProvider;
+            WaveStream keySound = e.Info.vkCode switch
             {
-                VK_CODE_BACKSPACE => soundPath.Backspace,
-                VK_CODE_ENTER => soundPath.Enter,
-                VK_CODE_SPACE => soundPath.Space,
-                _ => soundPath.Generic,
+                VK_CODE_BACKSPACE => soundProvider.Backspace,
+                VK_CODE_ENTER => soundProvider.Enter,
+                VK_CODE_SPACE => soundProvider.Space,
+                _ => soundProvider.Generic,
             };
-            Stream streamCopy = new MemoryStream();
-            soundStream.Seek(0, SeekOrigin.Begin);
-            soundStream.CopyTo(streamCopy);
-            streamCopy.Seek(0, SeekOrigin.Begin);
-            StandaloneAudioPlayer.Instance.PlaySound(streamCopy);
+            
+            StandaloneAudioPlayer.Instance.PlaySound(keySound);
             form2.TriggerShow();
         }
 

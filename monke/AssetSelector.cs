@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,9 +9,22 @@ using System.Threading.Tasks;
 
 namespace monke
 {
-    public record KeySoundPath(Stream Generic, Stream Backspace, Stream Enter, Stream Space)
-    {
+    public record KeySoundStream(Stream Generic, Stream Backspace, Stream Enter, Stream Space) {}
 
+    public record KeySoundProvider {
+        public WaveStream Generic, Backspace, Enter, Space;
+        public KeySoundProvider(KeySoundStream path)
+        {
+            path.Generic.Seek(0, SeekOrigin.Begin);
+            path.Backspace.Seek(0, SeekOrigin.Begin);
+            path.Enter.Seek(0, SeekOrigin.Begin);
+            path.Space.Seek(0, SeekOrigin.Begin);
+
+            Generic = new Mp3FileReader(path.Generic);
+            Backspace = new Mp3FileReader(path.Backspace);
+            Enter = new Mp3FileReader(path.Enter);
+            Space = new Mp3FileReader(path.Space);
+        }
     }
 
     // Service to load assets based on keyboard selected
@@ -19,8 +33,11 @@ namespace monke
         const string PRESS_FOLDER_NAME = "press";
         const string RELEASE_FOLDER_NAME = "released";
 
-        public KeySoundPath PressSoundPath { get; private set; }
-        public KeySoundPath ReleaseSoundPath { get; private set; }
+        public KeySoundProvider PressSoundProvider { get; private set; }
+        public KeySoundProvider ReleaseSoundProvider { get; private set; }
+
+        public KeySoundStream PressSoundStream { get; private set; }
+        public KeySoundStream ReleaseSoundStream { get; private set; }
 
         private static KeyboardModel keyboard = KeyboardModel.models[0];
 
@@ -29,7 +46,6 @@ namespace monke
             return typeof(AssetSelector).Assembly.GetManifestResourceStream(path);
         }
         
-
         public static KeyboardModel Keyboard
         {
             set 
@@ -44,19 +60,19 @@ namespace monke
 
         public static AssetSelector Instance { get; private set; } = LoadAssets(KeyboardModel.models[0]);
 
-        private AssetSelector(KeySoundPath Press, KeySoundPath Release)
+        private AssetSelector(KeySoundStream Press, KeySoundStream Release)
         {
-            PressSoundPath = Press;
-            ReleaseSoundPath = Release;
-        }
+            PressSoundStream = Press;
+            ReleaseSoundStream = Release;
 
+            PressSoundProvider = new KeySoundProvider(PressSoundStream);
+            ReleaseSoundProvider = new KeySoundProvider(ReleaseSoundStream);
+        }
 
         // Load assets from selected keyboard
         private static AssetSelector LoadAssets(KeyboardModel keyboard)
         {
             List<string> resourceNames = GetResourceNames(keyboard.Path);
-            // TODO: Parse and map to specific keys
-            Debug.WriteLine("dafuq");
 
             // Press sounds
             IEnumerable<string> pressResourceNames = resourceNames.Where(x => x.Contains(PRESS_FOLDER_NAME));
@@ -65,7 +81,7 @@ namespace monke
             string enterPressSound = pressResourceNames.FirstOrDefault(x => x.Contains("ENTER")) ?? genericPressSound;
             string spacePressSound = pressResourceNames.FirstOrDefault(x => x.Contains("BACKSPACE")) ?? genericPressSound;
 
-            KeySoundPath pressSoundPath = new(
+            KeySoundStream pressSoundPath = new(
                 Generic: _soundStream(genericPressSound),
                 Backspace: _soundStream(backspacePressSound),
                 Enter: _soundStream(enterPressSound),
@@ -78,7 +94,7 @@ namespace monke
             string enterReleaseSound = releaseResourceNames.FirstOrDefault(x => x.Contains("ENTER")) ?? genericReleaseSound;
             string spaceReleaseSound = releaseResourceNames.FirstOrDefault(x => x.Contains("BACKSPACE")) ?? genericReleaseSound;
 
-            KeySoundPath releaseSoundPath = new(
+            KeySoundStream releaseSoundPath = new(
                 Generic: _soundStream(genericReleaseSound),
                 Backspace: _soundStream(backspaceReleaseSound),
                 Enter: _soundStream(enterReleaseSound),

@@ -11,7 +11,7 @@ namespace test
             Console.WriteLine("Hello, World!");
             var assets = AssetSelector.Instance;
             AssetSelector.Keyboard = KeyboardModel.models[0];
-            var press = assets.PressSoundPath;
+            var press = assets.PressSoundStream;
 
             while(true)
             {

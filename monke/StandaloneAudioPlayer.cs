@@ -37,14 +37,14 @@ namespace monke
             player.Play();
         }
 
-        public void PlaySound(Stream stream)
+        public void PlaySound(WaveStream keySound)
         {
-            AutoDisposeFileReader mp3 = new(new Mp3FileReader(stream));
-            // mixer.AddMixerInput(mp3);
+            // mixer.AddMixerInput(keySound);
+            keySound.Seek(0, SeekOrigin.Begin);
 
             var waveOut = new WaveOut();
             waveOut.DeviceNumber = deviceId;
-            waveOut.Init(mp3);
+            waveOut.Init(keySound);
             waveOut.Play();
         }
 
