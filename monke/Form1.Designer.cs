@@ -71,7 +71,5 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox keyboardComboBox;
-        private System.Windows.Forms.Button updateKeyboard;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     }
 }

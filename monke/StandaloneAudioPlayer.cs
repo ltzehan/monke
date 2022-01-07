@@ -25,9 +25,11 @@ namespace monke
         {
             AutoDisposeFileReader mp3 = new(new Mp3FileReader(stream));
 
-            var waveOut = new WaveOut();
-            waveOut.DeviceNumber = deviceId;
-            waveOut.Volume = 1.0F;
+            var waveOut = new WaveOut
+            {
+                DeviceNumber = deviceId,
+                Volume = 1.0F
+            };
             waveOut.Init(mp3);
             waveOut.Play();
         }
