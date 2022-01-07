@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="NAudio" Version="2.0.1" />
+  </ItemGroup>
+	
+  <ItemGroup>
     <None Remove="assets\audio\alpaca\press\BACKSPACE.mp3" />
     <None Remove="assets\audio\alpaca\press\ENTER.mp3" />
     <None Remove="assets\audio\alpaca\press\GENERIC_R0.mp3" />
