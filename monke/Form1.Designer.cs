@@ -28,9 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.keyboardComboBox = new System.Windows.Forms.ComboBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.updateKeyboard = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.SuspendLayout();
             // 
             // keyboardComboBox
@@ -62,6 +64,12 @@
             this.updateKeyboard.UseVisualStyleBackColor = true;
             this.updateKeyboard.Click += new System.EventHandler(this.submitKeyboard);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -72,7 +80,8 @@
             this.Controls.Add(this.keyboardComboBox);
             this.Name = "Form1";
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.FormLoad);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onFormClosing);
+            this.Load += new System.EventHandler(this.onFormLoad);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -83,5 +92,6 @@
         private System.Windows.Forms.ComboBox keyboardComboBox;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button updateKeyboard;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     }
 }
