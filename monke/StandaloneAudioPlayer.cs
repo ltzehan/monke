@@ -20,6 +20,7 @@ namespace monke
         {
             deviceId = Enumerable.Range(0, WaveOut.DeviceCount)
                 .First(idx => WaveOut.GetCapabilities(idx).ProductName.Contains("Speaker"));
+
             
             player = new WaveOutEvent
             {
@@ -40,9 +41,9 @@ namespace monke
         public void PlaySound(Stream stream)
         {
             AutoDisposeFileReader mp3 = new(new Mp3FileReader(stream));
-            // mixer.AddMixerInput(mp3);
+            // mixer.AddMixerInput(o);
 
-            var waveOut = new WaveOut();
+            using var waveOut = new WaveOut();
             waveOut.DeviceNumber = deviceId;
             waveOut.Init(mp3);
             waveOut.Play();

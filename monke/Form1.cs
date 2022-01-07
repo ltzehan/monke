@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,6 +84,39 @@ namespace monke
             }
         }
 
+        private Thread msgReader;
+
+        // GetMessage
+        [DllImport(@"user32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+        public static extern bool GetMessage(ref MSG message, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+        [DllImport(@"user32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+        public static extern bool TranslateMessage(ref MSG message);
+        [DllImport(@"user32.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+        public static extern long DispatchMessage(ref MSG message);
+
+        private const int WM_CUSTOM_1 = 0x0400 + 2001;
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            long x;
+            long y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MSG
+        {
+            public IntPtr hwnd;
+            public uint message;
+            public UIntPtr wParam;
+            public IntPtr lParam;
+            public uint time;
+            public POINT pt;
+        }
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool PostThreadMessage(uint threadId, uint msg, UIntPtr wParam, IntPtr lParam);
+
         private void OnFormLoad(object? sender, EventArgs e)
         {   
             keyboardComboBox.DisplayMember = "DisplayName";
@@ -92,17 +126,37 @@ namespace monke
 
             var instance = GlobalKeyboardEvents.Instance;
 
-            var t = new Thread(() =>
-            {
+            var dummy = new Form();
+            var s = new Thread(() => {
                 while (true)
                 {
-                    if (instance.Events.TryDequeue(out var ev))
+                    while (true)
                     {
-                        OnKeyPress(ev);
+                        while(instance.Events.IsEmpty) { }
+                        if (instance.Events.TryDequeue(out var ev))
+                        {
+                        }
                     }
                 }
             });
-            t.Start();
+            s.Start();
+
+            msgReader = new Thread(() =>
+            {
+                dummy.RightToLeftChanged += (ev, _) =>
+                {
+                    OnKeyPress(ev as KeypressEventArgs);
+                };
+                dummy.Width = 0;
+                dummy.Width = 0;
+                dummy.ShowInTaskbar = false;
+                dummy.FormBorderStyle = FormBorderStyle.None;
+                dummy.WindowState = FormWindowState.Minimized;
+                Application.Run(dummy);
+
+            });
+            msgReader.Start();
+
         }
 
         private void OnKeyPress(KeypressEventArgs e)
@@ -115,12 +169,9 @@ namespace monke
                 VK_CODE_SPACE => soundPath.Space,
                 _ => soundPath.Generic,
             };
-            Stream streamCopy = new MemoryStream();
             soundStream.Seek(0, SeekOrigin.Begin);
-            soundStream.CopyTo(streamCopy);
-            streamCopy.Seek(0, SeekOrigin.Begin);
-            StandaloneAudioPlayer.Instance.PlaySound(streamCopy);
-            form2.TriggerShow();
+            StandaloneAudioPlayer.Instance.PlaySound(soundStream);
+            // form2.TriggerShow();
         }
 
         private void OnFormClosing(object? sender, FormClosingEventArgs e)
