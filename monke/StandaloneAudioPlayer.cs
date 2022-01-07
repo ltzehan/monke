@@ -3,7 +3,6 @@ using NAudio.Wave;
 using System;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Threading;
 
 namespace monke

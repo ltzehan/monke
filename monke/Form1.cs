@@ -54,17 +54,20 @@ namespace monke
         {
             form2.Dispose();
             notifyIcon.Dispose();
-            Close();
+            Environment.Exit(0);
         }
 
         private void notifyIconClickHandler(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Minimized)
+            MouseEventArgs me = (MouseEventArgs)e;
+            if (me.Button == MouseButtons.Left && WindowState == FormWindowState.Minimized)
             {
                 Show();
                 WindowState = FormWindowState.Normal;
                 notifyIcon.Visible = false;
-                Focus();
+
+                TopMost = true;
+                Activate();
             }
         }
 
