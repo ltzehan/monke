@@ -11,6 +11,8 @@ namespace monke
     {
         private string displayName;
         private string path;
+        public string DisplayName => displayName;
+        public string Path => path;
 
         public KeyboardModel(string displayName, string path)
         {
