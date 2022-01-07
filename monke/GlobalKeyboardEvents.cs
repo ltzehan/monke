@@ -37,7 +37,7 @@ namespace monke
                 if (lParam != IntPtr.Zero)
                 {
                     var lp = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
-                    if (lp.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED)) // checks synthetic keycode
+                    if (!lp.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED)) // checks synthetic keycode
                     {
                         KeyClickedEvents(this, new KeypressEventArgs(wParam == (IntPtr)WM_KEYDOWN, lp));
                     }
