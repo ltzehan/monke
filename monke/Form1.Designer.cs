@@ -55,7 +55,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(253, 113);
+            this.ClientSize = new System.Drawing.Size(274, 113);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.keyboardComboBox);
             this.Name = "Form1";

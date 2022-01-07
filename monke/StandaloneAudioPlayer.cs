@@ -1,5 +1,6 @@
 ﻿using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.IO;
 using System.Linq;
@@ -12,24 +13,37 @@ namespace monke
         public static StandaloneAudioPlayer Instance { get; private set; } = new StandaloneAudioPlayer();
 
         private readonly int deviceId;
+        private readonly IWavePlayer player;
+        private readonly MixingSampleProvider mixer;
 
         public StandaloneAudioPlayer()
         {
             deviceId = Enumerable.Range(0, WaveOut.DeviceCount)
-                .Select(idx => WaveOut.GetCapabilities(idx).ProductName)
-                .ToList()
-                .FindIndex(x => x.Contains("Speaker"));
+                .First(idx => WaveOut.GetCapabilities(idx).ProductName.Contains("Speaker"));
+            
+            player = new WaveOutEvent
+            {
+                DeviceNumber = deviceId,
+                Volume = 1.0F
+            };
+
+            int sampleRate = 44100;
+            int channelCount = 1;
+
+            mixer = new(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount));
+            mixer.ReadFully = true;
+
+            player.Init(mixer);
+            player.Play();
         }
 
         public void PlaySound(Stream stream)
         {
             AutoDisposeFileReader mp3 = new(new Mp3FileReader(stream));
+            // mixer.AddMixerInput(mp3);
 
-            var waveOut = new WaveOut
-            {
-                DeviceNumber = deviceId,
-                Volume = 1.0F
-            };
+            var waveOut = new WaveOut();
+            waveOut.DeviceNumber = deviceId;
             waveOut.Init(mp3);
             waveOut.Play();
         }

@@ -30,6 +30,8 @@ namespace monke
             
             Text = "monke";
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Icon = Properties.Resources.Icon;
+            MaximizeBox = false;
 
             InitializeToolbarIcon();
 
