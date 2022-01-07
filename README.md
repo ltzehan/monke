@@ -12,3 +12,7 @@ Well, now you can with **monke**!
 
 - Various key switches to choose from
 - Key press noises come out from speaker, even with headphones plugged in, for maximum realism!
+
+---
+
+Key sounds taken (the normal ones, at least) taken from [kbsim](https://github.com/tplai/kbsim/).
