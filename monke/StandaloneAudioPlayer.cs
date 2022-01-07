@@ -11,15 +11,25 @@ namespace monke
     {
         public static StandaloneAudioPlayer Instance { get; private set; } = new StandaloneAudioPlayer();
 
-        public void PlaySound(Stream stream)
+        private readonly int deviceId;
+
+        public StandaloneAudioPlayer()
         {
-            stream.Seek(0, SeekOrigin.Begin);
-            using var mp3 = new Mp3FileReader(stream);
-            var deviceId = Enumerable.Range(0, WaveOut.DeviceCount)
+            deviceId = Enumerable.Range(0, WaveOut.DeviceCount)
                 .Select(idx => WaveOut.GetCapabilities(idx).ProductName)
                 .ToList()
                 .FindIndex(x => x.Contains("Speaker"));
+        }
 
+        public void PlaySound(Stream stream)
+        {
+            AutoDisposeFileReader mp3 = new(new Mp3FileReader(stream));
+
+            var waveOut = new WaveOut();
+            waveOut.DeviceNumber = deviceId;
+            waveOut.Volume = 1.0F;
+            waveOut.Init(mp3);
+            waveOut.Play();
         }
 
         public void CancelCurrentSound()

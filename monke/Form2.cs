@@ -16,9 +16,10 @@ namespace monke
         public Form2()
         {
             InitializeComponent();
-            this.BackColor = Color.White;
-            this.TransparencyKey = Color.White;
-            this.TopMost = true;
+            BackColor = Color.White;
+            TransparencyKey = Color.White;
+            TopMost = true;
+            ShowInTaskbar = false;
         }
 
         private void Form2_Load(object sender, EventArgs e)
