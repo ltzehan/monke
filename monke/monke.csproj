@@ -85,6 +85,11 @@
     <None Remove="assets\audio\cream\released\ENTER.mp3" />
     <None Remove="assets\audio\cream\released\GENERIC.mp3" />
     <None Remove="assets\audio\cream\released\SPACE.mp3" />
+    <None Remove="assets\audio\duck\press\BACKSPACE.mp3" />
+    <None Remove="assets\audio\duck\press\ENTER.mp3" />
+    <None Remove="assets\audio\duck\press\GENERIC.mp3" />
+    <None Remove="assets\audio\duck\press\SPACE.mp3" />
+    <None Remove="assets\audio\duck\released\GENERIC.mp3" />
     <None Remove="assets\audio\holypanda\press\BACKSPACE.mp3" />
     <None Remove="assets\audio\holypanda\press\ENTER.mp3" />
     <None Remove="assets\audio\holypanda\press\GENERIC_R0.mp3" />
@@ -239,6 +244,11 @@
     <EmbeddedResource Include="assets\audio\cream\released\ENTER.mp3" />
     <EmbeddedResource Include="assets\audio\cream\released\GENERIC.mp3" />
     <EmbeddedResource Include="assets\audio\cream\released\SPACE.mp3" />
+    <EmbeddedResource Include="assets\audio\duck\press\BACKSPACE.mp3" />
+    <EmbeddedResource Include="assets\audio\duck\press\ENTER.mp3" />
+    <EmbeddedResource Include="assets\audio\duck\press\GENERIC.mp3" />
+    <EmbeddedResource Include="assets\audio\duck\press\SPACE.mp3" />
+    <EmbeddedResource Include="assets\audio\duck\released\GENERIC.mp3" />
     <EmbeddedResource Include="assets\audio\holypanda\press\BACKSPACE.mp3" />
     <EmbeddedResource Include="assets\audio\holypanda\press\ENTER.mp3" />
     <EmbeddedResource Include="assets\audio\holypanda\press\GENERIC_R0.mp3" />
